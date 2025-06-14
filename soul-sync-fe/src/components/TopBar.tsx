@@ -5,14 +5,14 @@ import {
   BookOpen,
   Sparkles,
   Settings,
-  User,
+  Bot,
   Menu,
   LogOut,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
-import clsx from "clsx"; // optional, for cleaner classNames (or use template strings)
+import clsx from "clsx";
 
 const navItems = [
   { label: "Check-In", icon: <Brain className="w-5 h-5" />, path: "/check-in" },
@@ -26,11 +26,20 @@ const navItems = [
     icon: <Sparkles className="w-5 h-5" />,
     path: "/sync",
   },
+  {
+    label: "Chat",
+    icon: <Bot className="w-6 h-6" />,
+    path: "/chat",
+  },
 ];
 
 export default function TopBar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`;
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full px-6 py-4 bg-white shadow-sm flex items-center justify-between">
@@ -65,9 +74,7 @@ export default function TopBar() {
           </Link>
         </button>
         <button
-          onClick={() => {
-            console.log("Logging out...");
-          }}
+          onClick={handleLogout}
           className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 transition text-red-700 font-semibold"
           aria-label="Logout"
         >
@@ -107,5 +114,3 @@ export default function TopBar() {
     </header>
   );
 }
-
-// Include route guards for authentication

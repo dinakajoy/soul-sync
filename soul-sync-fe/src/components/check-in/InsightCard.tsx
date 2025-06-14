@@ -35,19 +35,25 @@ export default function InsightCard({
           className="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg hover:bg-purple-200"
           onClick={() => setShowAffirmation(!showAffirmation)}
         >
-          💬 Affirmation
+          🧘 Affirmations
         </button>
-        <Link
-          href="/sync"
-          className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200"
-        >
-          🔮 Start Sync
-        </Link>
         <Link
           href="/journal"
           className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200"
         >
           📓 Journal It
+        </Link>
+        <Link
+          href="/sync"
+          className="bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200"
+        >
+          🔮 Start Sync
+        </Link>
+        <Link
+          href="/chat"
+          className="bg-orange-100 text-orange-700 px-4 py-2 rounded-lg hover:bg-orange-200"
+        >
+          💬 Chat
         </Link>
       </div>
     </div>

@@ -24,23 +24,31 @@ export default function CheckInPage() {
       if (!mood?.emoji || !reflection) {
         setError("Please select a mood and enter your reflection.");
       }
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/check-in`, {
-        method: "POST",
-        body: JSON.stringify({
-          moodEmoji: mood?.emoji,
-          emotion: mood?.label,
-          reflection,
-        }),
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/check-in`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            moodEmoji: mood?.emoji,
+            emotion: mood?.label,
+            reflection,
+          }),
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       const data = await res.json();
+      if (data.error) {
+        setError(data.error);
+        setSubmitted(false);
+        return;
+      }
       if (data) {
         setJournal(reflection);
         setResponse(data);
         setSubmitted(false);
       }
-      // updateMoodGraph(data); // refresh chart
     } catch (error) {
       console.error("Error during submission:", error);
       setError("Error during submission. Please try again.");
@@ -52,25 +60,29 @@ export default function CheckInPage() {
     <AppLayout>
       <div className="max-w-xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold text-purple-700">Daily Check-In</h1>
+        <blockquote className="text-gray-500 italic mt-2">
+          The purpose of Checkins to build the habit of quickly reflecting on
+          how you feel at any moment or daily.
+        </blockquote>
         <p className="mt-2 text-gray-600">
           Let’s reflect on how you are feeling today.
         </p>
+
         <hr className="my-4 py-4" />
 
         <>
           <MoodSelector selected={mood} onSelect={setMood} />
-          <ReflectionInput value={reflection} onChange={setReflection} />
+          <ReflectionInput value={reflection} onChange={setReflection} response={response} />
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-          {response && (
-            <p className="text-green-500 text-sm mt-2">{response}</p>
+          {!response && (
+            <button
+              className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleSubmit}
+              disabled={submitted || !!response}
+            >
+              Submit Check-In
+            </button>
           )}
-          <button
-            className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleSubmit}
-            disabled={submitted || response!!}
-          >
-            Submit Check-In
-          </button>
         </>
         {response && <InsightCard response={response} />}
       </div>

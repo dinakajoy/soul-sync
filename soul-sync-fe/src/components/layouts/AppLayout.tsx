@@ -1,10 +1,30 @@
-import TopBar from "@/components/TopBar";
+"use client";
 
-export default function AppLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
+import TopBar from "@/components/TopBar";
+import useCurrentUser from "@/lib/useUser";
+import { useEffect, useState } from "react";
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { user, loading } = useCurrentUser();
+  const { setUser } = useUser();
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        router.replace("/");
+      } else {
+        setUser(user);
+        setIsReady(true);
+      }
+    }
+  }, [loading, user, router, setUser]);
+
+  if (loading || !isReady) return null;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <TopBar />

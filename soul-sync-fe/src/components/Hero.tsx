@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
 export default function Hero() {
-  const router = useRouter();
+  const handleLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+  };
 
   return (
     <section className="w-full flex flex-col items-center justify-center text-center px-4 py-20 bg-gradient-to-b from-purple-100 to-white">
@@ -13,8 +14,8 @@ export default function Hero() {
         “Sync with your soul, one reflection at a time.”
       </p>
       <Button
-        className="mt-6 bg-purple-600 hover:bg-purple-700 text-white text-lg px-6 py-3 rounded-full"
-        onClick={() => router.push("/auth")}
+        className="mt-6 bg-purple-600 hover:bg-purple-700 text-white text-lg px-6 py-3 rounded-full cursor-pointer"
+        onClick={handleLogin}
       >
         Start Your Journey →
       </Button>

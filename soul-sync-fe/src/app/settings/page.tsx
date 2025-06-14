@@ -1,32 +1,56 @@
 "use client";
 
 import { useState } from "react";
-import { LucideTrash2, LucideDownload, LucideUser } from "lucide-react";
+import { LucideTrash2, LucideUser } from "lucide-react";
+import { useUser } from "@/context/UserContext";
 import AppLayout from "@/components/layouts/AppLayout";
 
 export default function SettingsPage() {
+  const { user } = useUser();
+
   const [isDeleting, setIsDeleting] = useState(false);
-  const [exporting, setExporting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleExport = () => {
-    setExporting(true);
-    setTimeout(() => {
-      alert("Your data has been exported as JSON.");
-      setExporting(false);
-    }, 1000);
-  };
-
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    setError(null);
     const confirm = window.confirm(
       "Are you sure you want to permanently delete all your data? This action cannot be undone."
     );
     if (confirm) {
       setIsDeleting(true);
-      setTimeout(() => {
-        alert("Your data has been deleted.");
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/deete-data/all`,
+          {
+            method: "DELETE",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        const data = await res.json();
+        if (data.error) {
+          setError(data.error);
+          setIsDeleting(false);
+          return;
+        }
+        if (data) {
+          alert("Your data has been deleted.");
+          setIsDeleting(false);
+        }
+      } catch (error) {
+        console.error("Error during submission:", error);
+        setError("Error during submission. Please try again.");
         setIsDeleting(false);
-      }, 1500);
+      }
     }
+  };
+
+  const formattedDate = (date: string) => {
+    const dateObj = new Date(date);
+    const month = dateObj.toLocaleString("en-US", { month: "long" });
+    const year = dateObj.getFullYear();
+    return `${month}, ${year}`;
   };
 
   return (
@@ -42,13 +66,14 @@ export default function SettingsPage() {
           </h2>
           <div className="text-gray-700 space-y-1">
             <p>
-              <strong>Name:</strong> Joy Odinaka
+              <strong>Name:</strong> {user?.name}
             </p>
             <p>
-              <strong>Email:</strong> joy@example.com
+              <strong>Email:</strong> {user?.email}
             </p>
             <p>
-              <strong>Member since:</strong> May 2023
+              <strong>Member since:</strong>{" "}
+              {user?.createdAt ? formattedDate(user?.createdAt) : "N/A"}
             </p>
           </div>
         </section>
@@ -60,21 +85,11 @@ export default function SettingsPage() {
           </h2>
 
           <div className="space-y-4">
-            {/* Export */}
-            <button
-              onClick={handleExport}
-              disabled={exporting}
-              className="flex items-center gap-2 px-4 py-2 rounded text-white bg-purple-600 hover:bg-purple-700 transition disabled:opacity-50"
-            >
-              <LucideDownload className="w-4 h-4" />
-              {exporting ? "Exporting..." : "Export Entries (JSON)"}
-            </button>
-
-            {/* Delete */}
+            {error && <p className="p-2 text-red-500">{error}</p>}
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-              className="flex items-center gap-2 px-4 py-2 rounded text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 rounded text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             >
               <LucideTrash2 className="w-4 h-4" />
               {isDeleting ? "Deleting..." : "Delete All Data"}

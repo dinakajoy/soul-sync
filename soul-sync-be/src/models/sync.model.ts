@@ -1,16 +1,12 @@
 import mongoose from "mongoose";
 
-const CheckinSchema = new mongoose.Schema({
+const SyncSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  emotion: {
-    type: String,
-    required: true,
-  },
-  moodEmoji: {
+  theme: {
     type: String,
     required: true,
   },
@@ -20,4 +16,4 @@ const CheckinSchema = new mongoose.Schema({
   },
 });
 
-export const Checkin = mongoose.model("Checkin", CheckinSchema);
+export const Sync = mongoose.model("Sync", SyncSchema);
