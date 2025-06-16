@@ -27,8 +27,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      sameSite: "lax", // or "none" if using HTTPS and cross-domain
-      secure: false, // true if using HTTPS
+      sameSite: "none",
+      secure: true,
     },
   })
 );
@@ -90,7 +90,11 @@ passport.deserializeUser(async (id: string, done) => {
 });
 
 app.get("/", (_req: Request, res: Response) => {
-  res.status(200).json({ message: "Hello! Welcome to Soul Sync, your emotional AI companion" });
+  res
+    .status(200)
+    .json({
+      message: "Hello! Welcome to Soul Sync, your emotional AI companion",
+    });
   return;
 });
 
