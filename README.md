@@ -12,8 +12,8 @@ It supports journaling, daily check-ins, and guided sync sessions, all enhanced 
 - 🔐 **Google Login** (OAuth2)  
   Secure, one-click sign-in with your Google account.
 
-- 💬 **AI Chat Support**  
-  Talk to a gentle emotional support AI anytime — designed to offer encouragement, clarity, or calm.
+- 💬 **Chat Support**  
+  Talk to a gentle emotional support bot anytime, designed to offer encouragement, clarity, or calm.
 
 - 📓 **Smart Journaling**  
   Log your thoughts, and receive kind, AI-powered reflections in return.
@@ -24,15 +24,15 @@ It supports journaling, daily check-ins, and guided sync sessions, all enhanced 
 - 📈 **Mood Check-ins**  
   Track your emotional patterns with quick daily entries.
 
-- 📈 **Delete Datas**  
+- 📈 **Delete Data**  
   Delete all your data at any point.
 
 
 ## 🛠️ Tech Stack
 
-- Frontend: Next.js / Tailwind CSS
+- Frontend: Next.js, Tailwind CSS
 
-- Backend: Node.js / Express / MongoDB
+- Backend: Node.js, Express, MongoDB
 
 - Auth: Google OAuth 2.0
 

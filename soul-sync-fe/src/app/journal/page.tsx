@@ -87,7 +87,13 @@ export default function JournalPage() {
     fetchJournal();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <img src="/loader.gif" alt="Loading..." className="w-16 h-16" />
+      </div>
+    );
+  }
 
   const filteredEntries = journalEntries.filter((entry) =>
     [entry.entry, entry.mood, entry.date].some((field) =>

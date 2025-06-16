@@ -12,11 +12,7 @@ import {
 } from "recharts";
 import { useEffect, useState } from "react";
 import { BarChart, Bar } from "recharts";
-import {
-  LucideSmile,
-  LucideMic,
-  LucideBookOpen,
-} from "lucide-react";
+import { LucideSmile, LucideMic, LucideBookOpen } from "lucide-react";
 import AppLayout from "@/components/layouts/AppLayout";
 import { AllEntries, Counts } from "@/types";
 
@@ -84,7 +80,13 @@ export default function InsightsPage() {
     fetchData();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <img src="/loader.gif" alt="Loading..." className="w-16 h-16" />
+      </div>
+    );
+  }
 
   const moodData = allData?.checkins?.map((entry) => {
     const date = new Date(entry.date).toLocaleDateString("en-US", {
@@ -191,7 +193,6 @@ export default function InsightsPage() {
   );
 }
 
-// 🔹 Summary Card Component
 function StatCard({
   icon,
   label,

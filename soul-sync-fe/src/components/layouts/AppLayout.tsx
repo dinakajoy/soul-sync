@@ -23,7 +23,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [loading, user, router, setUser]);
 
-  if (loading || !isReady) return null;
+  if (loading || !isReady) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <img src="/loader.gif" alt="Loading..." className="w-32 h-32" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
