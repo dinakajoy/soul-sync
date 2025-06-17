@@ -90,11 +90,9 @@ passport.deserializeUser(async (id: string, done) => {
 });
 
 app.get("/", (_req: Request, res: Response) => {
-  res
-    .status(200)
-    .json({
-      message: "Hello! Welcome to Soul Sync, your emotional AI companion",
-    });
+  res.status(200).json({
+    message: "Hello! Welcome to Soul Sync, your emotional AI companion",
+  });
   return;
 });
 
