@@ -114,17 +114,9 @@ app.get(
     failureRedirect: `${config.get("environment.clientURL")}`,
   }),
   (req, res) => {
-    res.redirect("/auth/success");
+    res.redirect(`${config.get("environment.clientURL")}/insights`);
   }
 );
-
-app.get("/auth/success", (req, res) => {
-  if (req.isAuthenticated()) {
-    res.redirect(`${config.get("environment.clientURL")}/insights`);
-  } else {
-    res.redirect(`${config.get("environment.clientURL")}`);
-  }
-});
 
 app.get("/debug/session", (req, res) => {
   res.json({
