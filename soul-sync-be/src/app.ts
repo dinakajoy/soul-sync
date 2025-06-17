@@ -109,9 +109,26 @@ app.get(
     failureRedirect: `${config.get("environment.clientURL")}`,
   }),
   (req, res) => {
-    res.redirect(`${config.get("environment.clientURL")}/insights`);
+    res.redirect("/auth/success");
   }
 );
+
+app.get("/auth/success", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.redirect(`${config.get("environment.clientURL")}/insights`);
+  } else {
+    res.redirect(`${config.get("environment.clientURL")}`);
+  }
+});
+
+app.get("/debug/session", (req, res) => {
+  res.json({
+    sessionID: req.sessionID,
+    user: req.user,
+    isAuthenticated: req.isAuthenticated?.() || false,
+    cookies: req.cookies,
+  });
+});
 
 app.use("/api", router);
 
