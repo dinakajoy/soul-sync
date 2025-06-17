@@ -4,6 +4,7 @@ import createError from "http-errors";
 import cors from "cors";
 import compression from "compression";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 
@@ -25,6 +26,10 @@ app.use(
     secret: config.get("environment.secret"),
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: config.get("dbConfig.url"),
+      collectionName: "sessions",
+    }),
     cookie: {
       httpOnly: true,
       sameSite: "none",
