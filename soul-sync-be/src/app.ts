@@ -113,7 +113,7 @@ app.get(
       <script>
         window.opener.postMessage({ token: "${
           user.accessToken
-        }" }, "${config.get("environment.clientURL")}");
+        }" }, "https://soul-sync-platform.vercel.app");
         window.close();
       </script>
     `;
