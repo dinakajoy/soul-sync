@@ -16,9 +16,10 @@ export default function Hero() {
     const messageHandler = (event: MessageEvent) => {
       if (event.origin !== process.env.NEXT_PUBLIC_API_URL) return;
 
+      console.log("Event ==== received:", event);
       const { token } = event.data;
+      console.log("Token received:", token);
       if (token) {
-        console.log("Token received:", token);
         localStorage.setItem("access_token", token);
         router.push("/insights");
       }
