@@ -33,8 +33,10 @@ export default function CheckInPage() {
             emotion: mood?.label,
             reflection,
           }),
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -72,7 +74,11 @@ export default function CheckInPage() {
 
         <>
           <MoodSelector selected={mood} onSelect={setMood} />
-          <ReflectionInput value={reflection} onChange={setReflection} response={response} />
+          <ReflectionInput
+            value={reflection}
+            onChange={setReflection}
+            response={response}
+          />
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           {!response && (
             <button

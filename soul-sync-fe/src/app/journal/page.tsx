@@ -36,8 +36,10 @@ export default function JournalPage() {
           body: JSON.stringify({
             entry: entry.trim(),
           }),
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -69,7 +71,10 @@ export default function JournalPage() {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/journal`,
           {
-            credentials: "include",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              "Content-Type": "application/json",
+            },
           }
         );
         if (!res.ok) {

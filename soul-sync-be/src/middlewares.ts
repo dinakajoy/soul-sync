@@ -9,16 +9,17 @@ export const isAuthenticated = async (
   res: Response,
   next: NextFunction
 ) => {
-  const tokenExist = req.headers["authorization"];
-  if (!tokenExist) {
+  const tokenString = req.headers["authorization"];
+  const token = tokenString?.split(" ")[1];
+  if (!token) {
     res.status(401).json({ message: "Unauthorized: Please log in." });
     return;
   } else {
     try {
-      const userGoogleId = getGoogleId(tokenExist);
+      const userGoogleId = getGoogleId(token);
       const result = await User.findOne({ googleId: userGoogleId }).lean();
 
-      if (!result || result.refreshToken !== tokenExist.split(" ")[1]) {
+      if (!result || result.refreshToken !== token) {
         res.status(401).json({ message: "Unauthorized: Please log in." });
         return;
       }

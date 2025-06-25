@@ -11,13 +11,6 @@ const themes = [
   { emoji: "✨", label: "Self-worth Boost" },
 ];
 
-// const prompts = [
-//   "What’s been on your mind lately?",
-//   // "Can you describe how that’s made you feel?",
-//   // "If your best friend felt this way, what would you say to them?",
-//   // "What’s one small step you can take today to feel a bit better?",
-// ];
-
 const defaultPrompt = ["What’s been on your mind lately?"];
 
 export default function SyncSessionPage() {
@@ -47,8 +40,10 @@ export default function SyncSessionPage() {
           currentQuestion: prompts[currentPromptIndex],
           userResponse: currentResponse,
         }),
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          "Content-Type": "application/json",
+        },
       });
 
       const data = await res.json();

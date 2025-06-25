@@ -23,8 +23,10 @@ export default function SettingsPage() {
           `${process.env.NEXT_PUBLIC_API_URL}/api/deete-data/all`,
           {
             method: "DELETE",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              "Content-Type": "application/json",
+            },
           }
         );
 

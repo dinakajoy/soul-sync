@@ -52,10 +52,16 @@ export default function InsightsPage() {
       try {
         const [res1, res2] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/counts`, {
-            credentials: "include",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              "Content-Type": "application/json"
+            },
           }),
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/get-all`, {
-            credentials: "include",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              "Content-Type": "application/json"
+            },
           }),
         ]);
 

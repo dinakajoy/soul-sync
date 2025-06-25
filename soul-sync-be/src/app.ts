@@ -63,9 +63,12 @@ passport.use(
             email,
             refreshToken: accessToken,
           });
-
-          await user.save();
+        } else {
+          // Update existing user
+          user.googleId = googleId;
+          user.refreshToken = accessToken;
         }
+        await user.save();
         const loggedInUser = {
           _id: user._id,
           googleId: user.googleId,
@@ -121,9 +124,9 @@ app.get(
 
 app.use("/api", router);
 
-app.get("/auth/logout", (req: Request, res: Response) => {
+app.get("/auth/logout/:token", (req: Request, res: Response) => {
   req.logout(async () => {
-    const tokenExist = req.headers["authorization"];
+    const tokenExist = req.params.token;
     if (tokenExist) {
       const userGoogleId = getGoogleId(tokenExist);
       await User.findOneAndUpdate(
