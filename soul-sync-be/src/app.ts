@@ -113,11 +113,13 @@ app.get(
     const html = `
       <script>
       if (window.opener) {
-        window.opener.postMessage({ token: "${user.accessToken}" }, "https://soul-sync-platform.vercel.app");
+        window.opener.postMessage({ token: "${
+          user.accessToken
+        }" }, "${config.get('environment.clientURL')}");
         window.close();
-        } else {
-      console.log("No opener window found.");
-    }
+      } else {
+        console.log("No opener window found.");
+      }
       </script>
     `;
 
