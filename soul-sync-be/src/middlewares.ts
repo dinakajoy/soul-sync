@@ -16,7 +16,6 @@ export const isAuthenticated = async (
   } else {
     try {
       const userGoogleId = getGoogleId(tokenExist);
-      console.log("userGoogleId", userGoogleId);
       const result = await User.findOne({ googleId: userGoogleId }).lean();
 
       if (!result || result.refreshToken !== tokenExist.split(" ")[1]) {

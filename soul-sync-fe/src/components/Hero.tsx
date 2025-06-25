@@ -18,6 +18,7 @@ export default function Hero() {
 
       const { token } = event.data;
       if (token) {
+        console.log("Token received:", token);
         localStorage.setItem("access_token", token);
         router.push("/insights");
       }
