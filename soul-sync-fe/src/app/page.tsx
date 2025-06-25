@@ -10,7 +10,7 @@ export default function Home() {
   const handleLogin = () => {
     const popup = window.open(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/google/popup`,
-      "Login with Google",
+      "_blank",
       "width=500,height=600"
     );
 

@@ -112,10 +112,12 @@ app.get(
     }
     const html = `
       <script>
-        window.opener.postMessage({ token: "${
-          user.accessToken
-        }" }, "${config.get("environment.clientURL")}");
+      if (window.opener) {
+        window.opener.postMessage({ token: "${user.accessToken}" }, "https://soul-sync-platform.vercel.app");
         window.close();
+        } else {
+      console.log("No opener window found.");
+    }
       </script>
     `;
 
