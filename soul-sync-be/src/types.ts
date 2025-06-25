@@ -6,6 +6,8 @@ export interface IUser extends Document {
   email: string;
   createdAt: Date;
   updatedAt: Date;
+  refreshToken?: string;
+  accessToken?: string;
 }
 
 export type OpenAICheckinResponse = {
@@ -24,3 +26,14 @@ export type OpenAISyncResponse = {
   response: string;
   question: string;
 };
+
+export interface JwtPayload {
+  [key: string]: any;
+  iss?: string | undefined;
+  sub?: string | undefined;
+  aud?: string | string[] | undefined;
+  exp?: number | undefined;
+  nbf?: number | undefined;
+  iat?: number | undefined;
+  jti?: string | undefined;
+}

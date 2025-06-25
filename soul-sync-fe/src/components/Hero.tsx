@@ -1,10 +1,33 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function Hero() {
+  const router = useRouter();
+
   const handleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+    const popup = window.open(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/google/popup`,
+      "Login with Google",
+      "width=500,height=600"
+    );
+
+    const messageHandler = (event: MessageEvent) => {
+      if (event.origin !== process.env.NEXT_PUBLIC_API_URL) return;
+
+      const { token } = event.data;
+      if (token) {
+        localStorage.setItem("access_token", token);
+        router.push("/insights");
+      }
+    };
+
+    window.addEventListener("message", messageHandler, false);
+
+    // cleanup
+    const cleanup = () => window.removeEventListener("message", messageHandler);
+    popup?.addEventListener("beforeunload", cleanup);
   };
 
   return (

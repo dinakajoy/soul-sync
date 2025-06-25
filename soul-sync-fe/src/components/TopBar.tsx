@@ -38,7 +38,9 @@ export default function TopBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`;
+    const accessToken = localStorage.getItem("access_token");
+    localStorage.removeItem("access_token");
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/logout/${accessToken}`;
   };
 
   return (

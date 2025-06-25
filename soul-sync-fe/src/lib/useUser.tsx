@@ -6,9 +6,12 @@ const useCurrentUser = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem("access_token");
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/current-user`, {
       method: "GET",
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => {
         if (!res.ok) throw new Error("Not logged in");

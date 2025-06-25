@@ -2,9 +2,9 @@ import express, { Express, Request, Response, NextFunction } from "express";
 import config from "config";
 import createError from "http-errors";
 import cors from "cors";
+import jwt from "jsonwebtoken";
 import compression from "compression";
 import session from "express-session";
-import MongoStore from "connect-mongo";
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 
@@ -12,6 +12,8 @@ import router from "./routes";
 import { User } from "./models/user.model";
 import { limiter } from "./utils/rate-limiter";
 import corsOptions from "./utils/corsOptions";
+import { IUser } from "types";
+import { getGoogleId } from "utils/helpers";
 
 const app: Express = express();
 
@@ -21,25 +23,7 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(
-  session({
-    secret: config.get("environment.secret"),
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: config.get("dbConfig.url"),
-      collectionName: "sessions",
-    }),
-    cookie: {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    },
-  })
-);
-
 app.use(passport.initialize());
-app.use(passport.session());
 
 passport.use(
   new GoogleStrategy(
@@ -49,8 +33,8 @@ passport.use(
       callbackURL: config.get("google.callbackURL"),
     },
     async function (
-      accessToken: string,
-      refreshToken: string,
+      _accessToken: string,
+      _refreshToken: string,
       profile: Profile,
       done: (error: any, user?: any) => void
     ) {
@@ -62,37 +46,40 @@ passport.use(
         // Check if user exists
         let user = await User.findOne({ googleId });
 
+        // Setup token: used this approach because cookies won't work on different domain for frontend and backend
+        const accessToken = jwt.sign(
+          { googleId },
+          config.get("environment.secret")!,
+          {
+            expiresIn: "6h",
+          }
+        );
+
         if (!user) {
           // Create new user
           user = new User({
             googleId,
             name,
             email,
+            refreshToken: accessToken,
           });
 
           await user.save();
         }
-        return done(null, user);
+        const loggedInUser = {
+          _id: user._id,
+          googleId: user.googleId,
+          name: user.name,
+          email: user.email,
+          accessToken,
+        };
+        return done(null, loggedInUser);
       } catch (err) {
         return done(err);
       }
     }
   )
 );
-
-passport.serializeUser((user: any, done) => {
-  return done(null, user._id.toString());
-});
-
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const user = await User.findById(id).exec();
-    if (!user) return done(null, false);
-    return done(null, user);
-  } catch (err) {
-    return done(err);
-  }
-});
 
 app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
@@ -103,34 +90,48 @@ app.get("/", (_req: Request, res: Response) => {
 
 // Trigger google login
 app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  "/auth/google/popup",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false,
+  })
 );
 
 // Handle google login callback
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: `${config.get("environment.clientURL")}`,
-  }),
+  passport.authenticate("google", { session: false }),
   (req, res) => {
-    res.redirect(`${config.get("environment.clientURL")}/insights`);
+    const user = req.user as IUser | null;
+    if (!user) {
+      return;
+    }
+    const html = `
+      <script>
+        window.opener.postMessage({ token: "${
+          user.accessToken
+        }" }, "${config.get("environment.clientURL")}");
+        window.close();
+      </script>
+    `;
+
+    res.send(html);
   }
 );
-
-app.get("/debug/session", (req, res) => {
-  res.json({
-    sessionID: req.sessionID,
-    user: req.user,
-    isAuthenticated: req.isAuthenticated?.() || false,
-    cookies: req.cookies,
-  });
-});
 
 app.use("/api", router);
 
 app.get("/auth/logout", (req: Request, res: Response) => {
-  req.logout(() => {
+  req.logout(async () => {
+    const tokenExist = req.headers["authorization"];
+    if (tokenExist) {
+      const userGoogleId = getGoogleId(tokenExist);
+      await User.findOneAndUpdate(
+        { googleId: userGoogleId },
+        { refreshToken: null, googleId: null },
+        { new: true }
+      );
+    }
     res.redirect(`${config.get("environment.clientURL")}`);
   });
 });
