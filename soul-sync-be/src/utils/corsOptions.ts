@@ -1,8 +1,10 @@
 import cors from "cors";
-import config from "config";
 import logger from "./logger";
 
-const allowedOrigins = [config.get("environment.clientURL")];
+const allowedOrigins = [
+  "https://soul-sync-platform.vercel.app",
+  "http://localhost:3000",
+];
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
