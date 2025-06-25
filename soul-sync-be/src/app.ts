@@ -44,7 +44,7 @@ passport.use(
         const googleId = profile.id;
 
         // Check if user exists
-        let user = await User.findOne({ googleId });
+        let user = await User.findOne({ email });
 
         // Setup token: used this approach because cookies won't work on different domain for frontend and backend
         const accessToken = jwt.sign(
@@ -68,6 +68,7 @@ passport.use(
           user.googleId = googleId;
           user.refreshToken = accessToken;
         }
+
         await user.save();
         const loggedInUser = {
           _id: user._id,
@@ -113,12 +114,13 @@ app.get(
       <script>
         window.opener.postMessage({ token: "${
           user.accessToken
-        }" }, "https://soul-sync-platform.vercel.app");
+        }" }, "${config.get("environment.clientURL")}");
         window.close();
       </script>
     `;
 
     res.send(html);
+    return;
   }
 );
 

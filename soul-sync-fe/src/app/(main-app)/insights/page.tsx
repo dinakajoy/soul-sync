@@ -13,7 +13,6 @@ import {
 import { useEffect, useState } from "react";
 import { BarChart, Bar } from "recharts";
 import { LucideSmile, LucideMic, LucideBookOpen } from "lucide-react";
-import AppLayout from "@/components/layouts/AppLayout";
 import { AllEntries, Counts } from "@/types";
 
 const emotionToMood: Record<string, { score: number; label: string }> = {
@@ -51,16 +50,16 @@ export default function InsightsPage() {
     async function fetchData() {
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/counts`, {
+          fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/counts`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/get-all`, {
+          fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/get-all`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
           }),
         ]);
@@ -125,77 +124,75 @@ export default function InsightsPage() {
   }));
 
   return (
-    <AppLayout>
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="max-w-screen-xl mx-auto p-6 space-y-10">
-          <h1 className="text-3xl font-bold text-purple-700">
-            📊 Insights Dashboard
-          </h1>
+    <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-screen-xl mx-auto p-6 space-y-10">
+        <h1 className="text-3xl font-bold text-purple-700">
+          📊 Insights Dashboard
+        </h1>
 
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatCard
-              icon={<LucideSmile />}
-              label="Check-Ins"
-              value={summaryData ? summaryData?.checkInCount : 0}
-            />
-            <StatCard
-              icon={<LucideMic />}
-              label="Sync Sessions"
-              value={summaryData ? summaryData?.syncSessionCount : 0}
-            />
-            <StatCard
-              icon={<LucideBookOpen />}
-              label="Journal Entries"
-              value={summaryData ? summaryData?.journalCount : 0}
-            />
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard
+            icon={<LucideSmile />}
+            label="Check-Ins"
+            value={summaryData ? summaryData?.checkInCount : 0}
+          />
+          <StatCard
+            icon={<LucideMic />}
+            label="Sync Sessions"
+            value={summaryData ? summaryData?.syncSessionCount : 0}
+          />
+          <StatCard
+            icon={<LucideBookOpen />}
+            label="Journal Entries"
+            value={summaryData ? summaryData?.journalCount : 0}
+          />
+        </div>
+
+        {/* Mood Trends + Journal Themes */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">
+              📅 Checkin Mood Timeline
+            </h2>
+            <ResponsiveContainer width="100%" height={500}>
+              <LineChart data={moodData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis
+                  domain={[1, 10]}
+                  ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone"
+                  dataKey="mood"
+                  stroke="#6366f1"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
 
-          {/* Mood Trends + Journal Themes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white rounded shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                📅 Checkin Mood Timeline
-              </h2>
+          <div className="bg-white rounded shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">
+              📘 Journal Themes
+            </h2>
+            <div className="border border-dashed border-gray-300 rounded flex items-center justify-center text-gray-500 italic">
               <ResponsiveContainer width="100%" height={500}>
-                <LineChart data={moodData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis
-                    domain={[1, 10]}
-                    ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Line
-                    type="monotone"
-                    dataKey="mood"
-                    stroke="#6366f1"
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                  />
-                </LineChart>
+                <BarChart data={chartData}>
+                  <XAxis dataKey="mood" />
+                  <YAxis ticks={[0, 10, 20, 30, 40]} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#8884d8" />
+                </BarChart>
               </ResponsiveContainer>
-            </div>
-
-            <div className="bg-white rounded shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                📘 Journal Themes
-              </h2>
-              <div className="border border-dashed border-gray-300 rounded flex items-center justify-center text-gray-500 italic">
-                <ResponsiveContainer width="100%" height={500}>
-                  <BarChart data={chartData}>
-                    <XAxis dataKey="mood" />
-                    <YAxis ticks={[0, 10, 20, 30, 40]} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
             </div>
           </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }
 

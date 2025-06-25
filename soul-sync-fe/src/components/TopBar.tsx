@@ -33,15 +33,9 @@ const navItems = [
   },
 ];
 
-export default function TopBar() {
+export default function TopBar({ handleLogout }: { handleLogout: () => void }) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleLogout = () => {
-    const accessToken = localStorage.getItem("access_token");
-    localStorage.removeItem("access_token");
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/logout/${accessToken}`;
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full px-6 py-4 bg-white shadow-sm flex items-center justify-between">

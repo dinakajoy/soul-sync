@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useJournal } from "@/context/JournalContext";
-import AppLayout from "@/components/layouts/AppLayout";
 import RichInput from "@/components/journal/RichInput";
 import ReflectionPanel from "@/components/journal/ReflectionPanel";
 import EntriesSidebar from "@/components/journal/EntriesSidebar";
@@ -30,7 +29,7 @@ export default function JournalPage() {
         setError("Please make an entry.");
       }
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/journal`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/journal`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -69,7 +68,7 @@ export default function JournalPage() {
     async function fetchJournal() {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/journal`,
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/journal`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -107,56 +106,50 @@ export default function JournalPage() {
   );
 
   return (
-    <AppLayout>
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex flex-col justify-center lg:flex-row gap-6 h-full p-4">
-          {/* Sidebar */}
-          <div className="lg:w-2/5 w-full">
-            <EntriesSidebar
-              journalEntries={filteredEntries}
-              onSearch={setSearchTerm}
-              onEntryClick={handleEntryClick}
-            />
-          </div>
-
-          {/* Main Area */}
-          <div className="flex-1 space-y-4">
-            <h1 className="text-2xl font-semibold text-purple-700">
-              Your Journal
-            </h1>
-            <blockquote className="text-gray-500 italic mt-2">
-              The purpose of Jounaling is have a safe space to vent, express, or
-              reflect deeply - no structure, just open journaling
-            </blockquote>
-
-            <>
-              <RichInput
-                value={entry}
-                onChange={setEntry}
-                response={response}
-              />
-              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-              {!response && (
-                <button
-                  className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={handleSubmit}
-                  disabled={submitted || !!response}
-                >
-                  Submit Entry
-                </button>
-              )}
-            </>
-            {!error && response && <ReflectionPanel response={response} />}
-          </div>
-
-          {isDrawerOpen && selectedEntry && (
-            <JournalDrawer
-              entry={selectedEntry}
-              onClose={() => setIsDrawerOpen(false)}
-            />
-          )}
+    <div className="max-w-6xl mx-auto space-y-6">
+      <div className="flex flex-col justify-center lg:flex-row gap-6 h-full p-4">
+        {/* Sidebar */}
+        <div className="lg:w-2/5 w-full">
+          <EntriesSidebar
+            journalEntries={filteredEntries}
+            onSearch={setSearchTerm}
+            onEntryClick={handleEntryClick}
+          />
         </div>
+
+        {/* Main Area */}
+        <div className="flex-1 space-y-4">
+          <h1 className="text-2xl font-semibold text-purple-700">
+            Your Journal
+          </h1>
+          <blockquote className="text-gray-500 italic mt-2">
+            The purpose of Jounaling is have a safe space to vent, express, or
+            reflect deeply - no structure, just open journaling
+          </blockquote>
+
+          <>
+            <RichInput value={entry} onChange={setEntry} response={response} />
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+            {!response && (
+              <button
+                className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleSubmit}
+                disabled={submitted || !!response}
+              >
+                Submit Entry
+              </button>
+            )}
+          </>
+          {!error && response && <ReflectionPanel response={response} />}
+        </div>
+
+        {isDrawerOpen && selectedEntry && (
+          <JournalDrawer
+            entry={selectedEntry}
+            onClose={() => setIsDrawerOpen(false)}
+          />
+        )}
       </div>
-    </AppLayout>
+    </div>
   );
 }

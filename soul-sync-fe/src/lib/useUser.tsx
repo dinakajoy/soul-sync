@@ -7,7 +7,7 @@ const useCurrentUser = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/current-user`, {
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/current-user`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
