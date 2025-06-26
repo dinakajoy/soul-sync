@@ -4,7 +4,6 @@ import createError from "http-errors";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import compression from "compression";
-import session from "express-session";
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 
@@ -115,7 +114,7 @@ app.get(
       if (window.opener) {
         window.opener.postMessage({ token: "${
           user.accessToken
-        }" }, "${config.get('environment.clientURL')}");
+        }" }, "${config.get("environment.clientURL")}");
         window.close();
       } else {
         console.log("No opener window found.");

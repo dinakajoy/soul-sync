@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { User } from "./models/user.model";
-import { JwtPayload } from "./types";
 import logger from "utils/logger";
 import { getGoogleId } from "utils/helpers";
 
