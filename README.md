@@ -1,7 +1,18 @@
 # 🧠 Soul Sync: An Emotional AI Companion
 
 **Soul Sync** is an AI-powered emotional well-being app that helps users reflect, regulate their emotions, and grow through intentional self-discovery.  
-It supports journaling, daily check-ins, and guided sync sessions, all enhanced with compassionate reflections.
+
+## Core Purpose
+
+A safe space where users can check in emotionally, express themselves, and receive gentle, AI-powered guidance that helps them reconnect with their inner self. Soul Sync helps people align with their inner self, syncing mind and soul
+
+What it does:
+
+- Users chat with an AI that understands their emotional tone
+- Syncs with their `emotional state` daily
+- Journaling, mood tracking, and personalized reflections
+- Integrates guided meditations, affirmations, and gentle prompts
+- Text chat modes
 
 ![Soul Sync Screenshot](./screenshot.png)
 
@@ -18,8 +29,8 @@ It supports journaling, daily check-ins, and guided sync sessions, all enhanced 
 - 📓 **Smart Journaling**  
   Log your thoughts, and receive kind, AI-powered reflections in return.
 
-- 🧘 **Sync Sessions**  
-  Themed, guided sessions (e.g., grief, clarity, focus) powered by AI coaching.
+- 🧘 **Sync Sessions**  (Guided Reflections)  
+  Themed, guided sessions (e.g., grief, clarity, focus) powered by AI prompting and coaching.
 
 - 📈 **Mood Check-ins**  
   Track your emotional patterns with quick daily entries.
@@ -27,18 +38,19 @@ It supports journaling, daily check-ins, and guided sync sessions, all enhanced 
 - 📈 **Delete Data**  
   Delete all your data at any point.
 
-
 ## 🛠️ Tech Stack
 
-- Frontend: Next.js, Tailwind CSS
-
+- Frontend: TypeScript, Next.js, TailwindCSS
 - Backend: Node.js, Express, MongoDB
-
 - Auth: Google OAuth 2.0
-
 - AI: OpenAI API (GPT-4)
-
 - Charts: Recharts
+
+## Privacy and Ethics
+
+- All entries are private
+- Option to delete data at any time
+- Emphasis: `This is not a substitute for therapy, but a companion. If you need help, please consult a licensed therapist`
 
 ## 🤝 Contributing
 

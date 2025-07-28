@@ -10,10 +10,11 @@ import {
   CartesianGrid,
   TooltipProps,
 } from "recharts";
-import { useEffect, useState } from "react";
+import { useQueries } from "@tanstack/react-query";
 import { BarChart, Bar } from "recharts";
 import { LucideSmile, LucideMic, LucideBookOpen } from "lucide-react";
 import { AllEntries, Counts } from "@/types";
+import { fetchAllData, fetchCounts } from "@/lib/requests";
 
 const emotionToMood: Record<string, { score: number; label: string }> = {
   Happy: { score: 1, label: "Happy 😊" },
@@ -42,54 +43,40 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<any, any>) => {
 };
 
 export default function InsightsPage() {
-  const [summaryData, setSummaryData] = useState<Counts | null>(null);
-  const [allData, setAllData] = useState<AllEntries | null>(null);
-  const [loading, setLoading] = useState(true);
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ["summaryCounts"],
+        queryFn: fetchCounts,
+      },
+      {
+        queryKey: ["allJournalData"],
+        queryFn: fetchAllData,
+      },
+    ],
+  });
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [res1, res2] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/counts`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-              "Content-Type": "application/json",
-            },
-          }),
-          fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/get-all`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-              "Content-Type": "application/json",
-            },
-          }),
-        ]);
+  const isLoading = results.some((r) => r.isLoading);
+  const isError = results.some((r) => r.isError);
+  const errorMessages = results
+    .map((r) => r.error?.message)
+    .filter(Boolean)
+    .join(" | ");
 
-        if (!res1.ok || !res2.ok) {
-          throw new Error("Failed to fetch data");
-        }
+  const summaryData = results[0].data as Counts | null;
+  const allData = results[1].data as AllEntries | null;
 
-        const [countData, allData] = await Promise.all([
-          res1.json(),
-          res2.json(),
-        ]);
-
-        setSummaryData(countData);
-        setAllData(allData);
-      } catch (error) {
-        console.error("Error loading journal:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <img src="/loader.gif" alt="Loading..." className="w-16 h-16" />
       </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <p className="text-red-500 text-center mt-4">Error: {errorMessages}</p>
     );
   }
 

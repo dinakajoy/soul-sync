@@ -1,68 +1,75 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useJournal } from "@/context/JournalContext";
 import MoodSelector from "@/components/check-in/MoodSelector";
 import ReflectionInput from "@/components/check-in/ReflectionInput";
 import InsightCard from "@/components/check-in/InsightCard";
 import { MoodOption } from "@/types";
+import { postCheckin } from "@/lib/requests";
 
 export default function CheckInPage() {
+  const queryClient = useQueryClient();
   const { setJournal } = useJournal();
-  const [submitted, setSubmitted] = useState(false);
+  
   const [mood, setMood] = useState<MoodOption | null>(null);
   const [reflection, setReflection] = useState("");
-  const [response, setResponse] = useState(null);
   const [error, setError] = useState("");
+  const [response, setResponse] = useState(null);
 
-  const handleSubmit = async () => {
-    setSubmitted(true);
+  const submitCheckIn = async ({
+    mood,
+    reflection,
+  }: {
+    mood: { emoji: string; label: string } | null;
+    reflection: string;
+  }) => {
+    if (!mood?.emoji || !reflection) {
+      throw new Error("Please select a mood and enter your reflection.");
+    }
+
+    const data = await postCheckin({
+      moodEmoji: mood.emoji,
+      emotion: mood.label,
+      reflection,
+    });
+
+    if (data.error) throw new Error(data.error);
+
+    return data;
+  };
+
+  const {
+    mutate: sendCheckin,
+    isPending,
+  } = useMutation({
+    mutationFn: submitCheckIn,
+    onSuccess: (data) => {
+      setJournal(reflection);
+      setResponse(data);
+      
+      // Invalidate the queries to refetch them
+      queryClient.invalidateQueries({ queryKey: ["summaryCounts"] });
+      queryClient.invalidateQueries({ queryKey: ["allJournalData"] });
+    },
+    onError: (err: Error) => {
+      setError(err.message);
+    },
+  });
+
+  const handleSubmit = () => {
     setError("");
     setResponse(null);
-    try {
-      if (!mood?.emoji || !reflection) {
-        setError("Please select a mood and enter your reflection.");
-      }
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/check-in`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            moodEmoji: mood?.emoji,
-            emotion: mood?.label,
-            reflection,
-          }),
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = await res.json();
-      if (data.error) {
-        setError(data.error);
-        setSubmitted(false);
-        return;
-      }
-      if (data) {
-        setJournal(reflection);
-        setResponse(data);
-        setSubmitted(false);
-      }
-    } catch (error) {
-      console.error("Error during submission:", error);
-      setError("Error during submission. Please try again.");
-      setSubmitted(false);
-    }
+    sendCheckin({ mood, reflection });
   };
 
   return (
     <div className="max-w-xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold text-purple-700">Daily Check-In</h1>
       <blockquote className="text-gray-500 italic mt-2">
-        The purpose of Checkins to build the habit of quickly reflecting on how
-        you feel at any moment or daily.
+        The purpose of Checkins is to build the habit of quickly reflecting on
+        how you feel at any moment or daily.
       </blockquote>
       <p className="mt-2 text-gray-600">
         Let’s reflect on how you are feeling today.
@@ -82,9 +89,9 @@ export default function CheckInPage() {
           <button
             className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSubmit}
-            disabled={submitted || !!response}
+            disabled={isPending}
           >
-            Submit Check-In
+            {isPending ? "Submitting..." : "Submit Check-In"}
           </button>
         )}
       </>

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { JournalProvider } from "@/context/JournalContext";
 import "./globals.css";
 import { UserProvider } from "@/context/UserContext";
+import { ReactQueryProvider } from "@/providers/react-query-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,9 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <UserProvider>
-          <JournalProvider>{children}</JournalProvider>
-        </UserProvider>
+        <ReactQueryProvider>
+          <UserProvider>
+            <JournalProvider>{children}</JournalProvider>
+          </UserProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

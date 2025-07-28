@@ -28,6 +28,7 @@ router.get("/current-user", isAuthenticated, getCurrentUserController);
 
 router.post(
   "/check-in",
+  isAuthenticated,
   checkinValidation(),
   validate,
   createCheckInController

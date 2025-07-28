@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useJournal } from "@/context/JournalContext";
+import { postSync, postTrackSync } from "@/lib/requests";
 
 const themes = [
   { emoji: "🧘", label: "Calm Anxiety" },
@@ -13,7 +15,9 @@ const themes = [
 const defaultPrompt = ["What’s been on your mind lately?"];
 
 export default function SyncSessionPage() {
+  const queryClient = useQueryClient();
   const { journal } = useJournal();
+
   const [prompts, setPrompts] = useState(defaultPrompt);
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
@@ -23,47 +27,37 @@ export default function SyncSessionPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const handleDone = async () => {
+  const syncMutation = useMutation({
+    mutationFn: postSync,
+    onSuccess: (data) => {
+      setPrompts((prev) => [...prev, data.question]);
+      setAIResponses((prev) => [...prev, data.response]);
+      setSubmitted(false);
+    },
+    onError: (err: Error) => {
+      setError(err.message);
+      setSubmitted(false);
+      queryClient.invalidateQueries({ queryKey: ["summaryCounts"] });
+    },
+  });
+
+  const handleDone = () => {
     setSubmitted(true);
     setError("");
     setAIResponses(airesponses);
-    try {
-      const currentResponse = input.trim();
-      if (!currentResponse) {
-        setError("Please make an entry.");
-      }
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/sync`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            theme: selectedTheme,
-            currentQuestion: prompts[currentPromptIndex],
-            userResponse: currentResponse,
-          }),
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
 
-      const data = await res.json();
-      if (data.error) {
-        setError(data.error);
-        setSubmitted(false);
-        return;
-      }
-      if (data) {
-        setPrompts((prompts) => [...prompts, data.question]);
-        setAIResponses((airesponses) => [...airesponses, data.response]);
-        setSubmitted(false);
-      }
-    } catch (error) {
-      console.error("Error during submission:", error);
-      setError("Error during submission. Please try again.");
+    const trimmedInput = input.trim();
+    if (!trimmedInput || !selectedTheme) {
+      setError("Please make an entry.");
       setSubmitted(false);
+      return;
     }
+
+    syncMutation.mutate({
+      theme: selectedTheme,
+      currentQuestion: prompts[currentPromptIndex],
+      userResponse: trimmedInput,
+    });
   };
 
   const handleNext = () => {
@@ -74,27 +68,31 @@ export default function SyncSessionPage() {
     }
   };
 
-  const restart = () => {
-    try {
-      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/track-sync`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ theme: selectedTheme }),
-        credentials: "include",
-        keepalive: true,
-      });
-    } catch (error) {
-      console.error("Background request failed", error);
-    }
+  const restartMutation = useMutation({
+    mutationFn: async () =>
+      postTrackSync({
+        theme: selectedTheme || themes[0].label,
+      }),
+    onSuccess: async () => {
+      setResponses([]);
+      setInput("");
 
+      await queryClient.invalidateQueries({ queryKey: ["summaryCounts"] });
+    },
+    onError: (err) => {
+      console.error("Restart failed", err);
+    },
+  });
+
+  const endSession = () => {
+    restartMutation.mutate();
+  };
+
+  const restartSession = () => {
     setSelectedTheme(null);
     setPrompts(defaultPrompt);
     setAIResponses([]);
     setCurrentPromptIndex(0);
-    setResponses([]);
-    setInput("");
   };
 
   return (
@@ -166,6 +164,7 @@ export default function SyncSessionPage() {
                   onClick={() => {
                     prompts.pop();
                     handleNext();
+                    endSession();
                   }}
                   className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition cursor-pointer"
                 >
@@ -196,7 +195,7 @@ export default function SyncSessionPage() {
               ))}
             </ul>
             <button
-              onClick={restart}
+              onClick={restartSession}
               className="mt-6 px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 cursor-pointer"
             >
               Restart Session
