@@ -40,7 +40,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <TopBar handleLogout={handleLogout} />
-      <main className="p-6">{children}</main>
+      <main className="p-4">{children}</main>
     </div>
   );
 }

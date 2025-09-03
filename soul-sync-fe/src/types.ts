@@ -63,3 +63,51 @@ export type AllEntries = {
     date: string;
   }[];
 };
+
+export type IPredictionResult = {
+  predictedClass: string;
+  probabilities: {
+    [key: string]: number;
+  };
+};
+
+export type IFormData = {
+  age: string;
+  family_history: "Yes" | "No";
+  work_interfere: string;
+  no_employees: string;
+  remote_work: "Yes" | "No";
+  leave: string;
+  obs_consequence: "Yes" | "No";
+  gender: string;
+  benefits: string;
+  care_options: string;
+  wellness_program: string;
+  seek_help: string;
+  anonymity: string;
+  mental_vs_physical: string;
+};
+
+export type IInputData = {
+  age: number;
+  family_history: number;
+  work_interfere: number;
+  no_employees: number;
+  remote_work: number;
+  leave: number;
+  obs_consequence: number;
+  gender_Male: number;
+  gender_Other: number;
+  benefits_No: number;
+  benefits_Yes: number;
+  "care_options_Not sure": number;
+  care_options_Yes: number;
+  wellness_program_No: number;
+  wellness_program_Yes: number;
+  seek_help_No: number;
+  seek_help_Yes: number;
+  anonymity_No: number;
+  anonymity_Yes: number;
+  mental_vs_physical_No: number;
+  mental_vs_physical_Yes: number;
+};

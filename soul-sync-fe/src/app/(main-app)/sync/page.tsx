@@ -100,6 +100,12 @@ export default function SyncSessionPage() {
       <div className="max-w-screen-md mx-auto p-6 space-y-6">
         <h1 className="text-3xl font-bold text-purple-700">🔮 Sync Session</h1>
 
+        <blockquote className="text-gray-500 italic mt-2">
+          The purpose of Sync Sessions is to create space for guided
+          self-reflection and alignment. It helps you slow down, reconnect with
+          your values, and gain clarity on your thoughts and emotions.
+        </blockquote>
+
         {!selectedTheme ? (
           <div>
             <h2 className="text-lg font-medium text-gray-700 mb-3">

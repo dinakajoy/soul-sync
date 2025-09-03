@@ -111,7 +111,7 @@ export default function InsightsPage() {
   }));
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="max-w-screen-xl mx-auto p-6 space-y-10">
         <h1 className="text-3xl font-bold text-purple-700">
           📊 Insights Dashboard

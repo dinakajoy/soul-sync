@@ -6,6 +6,7 @@ import {
   Sparkles,
   Settings,
   Bot,
+  Activity,
   Menu,
   LogOut,
 } from "lucide-react";
@@ -30,6 +31,11 @@ const navItems = [
     label: "Chat",
     icon: <Bot className="w-6 h-6" />,
     path: "/chat",
+  },
+  {
+    label: "Treatment Prediction",
+    icon: <Activity className="w-5 h-5" />, // New icon
+    path: "/treatment-need",
   },
 ];
 
