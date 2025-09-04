@@ -1,6 +1,7 @@
 # 🧠 Soul Sync: An Emotional AI Companion
 
 **Soul Sync** is an AI-powered emotional well-being app that helps users reflect, regulate their emotions, and grow through intentional self-discovery.  
+With latest update - Machine Learning Model to predict if user need Mental Health Treatment
 
 ## Core Purpose
 
@@ -13,8 +14,9 @@ What it does:
 - Journaling, mood tracking, and personalized reflections
 - Integrates guided meditations, affirmations, and gentle prompts
 - Text chat modes
+- Fill out a form to get mental health treatment need prediction
 
-![Soul Sync Screenshot](./screenshot.png)
+![Soul Sync Screenshot](./soul-sync-recording.gif)
 
 📷 Preview
 
@@ -35,6 +37,9 @@ What it does:
 - 📈 **Mood Check-ins**  
   Track your emotional patterns with quick daily entries.
 
+- 📈 **Mntal Health Treatment Need Predictor**  
+  Fill out a form and predictions on whether you should seek mental health treatment or not
+
 - 📈 **Delete Data**  
   Delete all your data at any point.
 
@@ -44,6 +49,7 @@ What it does:
 - Backend: Node.js, Express, MongoDB
 - Auth: Google OAuth 2.0
 - AI: OpenAI API (GPT-4)
+- ML Model: Pandas, NumPy, Matplotlib, Scikit-Learn, onnxruntime-web for deployment
 - Charts: Recharts
 
 ## Privacy and Ethics
@@ -60,4 +66,4 @@ If you would like to help improve the app, open an issue or fork and submit a pu
 ## 📄 License
 
 MIT License.
-© 2025 [Odinaka Joy](https://www.dinakajoy.com/)
+© 2025 [Odinaka Joy](https://www.dinakajoy.com)
